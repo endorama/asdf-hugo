@@ -4,7 +4,7 @@
 # ASDF_INSTALL_VERSION - if ASDF_INSTALL_TYPE is version then this will be the version number. Else it will be the git ref that is passed. Might point to a tag/commit/branch on the repo.
 # ASDF_INSTALL_PATH - the dir where the it has been inst
 
-ASDF_INSTALL_TYPE="version"
+set -euo pipefail
 
 [[ ${ASDF_INSTALL_TYPE} == "ref" ]] && { echo "ref install not supported"; exit 1; }
 
@@ -16,10 +16,24 @@ os=$(uname -s)
 arch="64bit"
 release_download_url="https://github.com/${owner}/${repo}/releases/download/${version}/hugo_${short_version}_${os}-${arch}.tar.gz"
 
-
-[[ $(uname -m) != *"x86_64"* ]] && arch="32bit"
+# [[ $(uname -m) != *"x86_64"* ]] && arch="32bit"
 
 echo $release_download_url
-echo $ASDF_INSTALL_TYPE
-echo $ASDF_INSTALL_VERSION
-echo $ASDF_INSTALL_PATH
+echo "ASDF_INSTALL_TYPE: $ASDF_INSTALL_TYPE"
+echo "ASDF_INSTALL_VERSION: $ASDF_INSTALL_VERSION"
+echo "ASDF_INSTALL_PATH: $ASDF_INSTALL_PATH"
+
+download_temp_folder=$(mktemp -d)
+echo $download_temp_folder
+ls -alh $download_temp_folder
+
+cd $download_temp_folder
+
+curl --silent --show-error -Lo "$download_temp_folder/hugo.tar.gz" -C - $release_download_url
+tar xzf "$download_temp_folder/hugo.tar.gz"
+chmod +x hugo
+tar zxf "$download_temp_folder/hugo.tar.gz" -C $ASDF_INSTALL_PATH || exit 1
+
+ls -alh $ASDF_INSTALL_PATH/
+
+exit 0
