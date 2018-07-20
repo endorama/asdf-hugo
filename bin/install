@@ -1,33 +1,38 @@
 #!/bin/bash
 #
-# ASDF_INSTALL_TYPE - version or ref
-# ASDF_INSTALL_VERSION - if ASDF_INSTALL_TYPE is version then this will be the version number. Else it will be the git ref that is passed. Might point to a tag/commit/branch on the repo.
-# ASDF_INSTALL_PATH - the dir where the it has been inst
+# https://github.com/asdf-vm/asdf/blob/master/docs/creating-plugins.md
 
 set -euo pipefail
+
+[[ "${ASDF_INSTALL_TYPE:-}" == "" ]] && ASDF_INSTALL_TYPE=version
 
 [[ ${ASDF_INSTALL_TYPE} == "ref" ]] && { echo "ref install not supported"; exit 1; }
 
 owner="gohugoio"
 repo="hugo"
 version=${ASDF_INSTALL_VERSION}
-short_version=${ASDF_INSTALL_VERSION:1}
+short_version=${ASDF_INSTALL_VERSION:1} # remove "v"
 os=$(uname -s)
-arch="64bit"
+
+case "$(uname -m)" in
+x86_64|amd64) arch="64bit"; ;;
+i686|i386) arch="32bit"; ;;
+*) echo "unknown architecture" && exit 1; ;;
+esac
+
 release_download_url="https://github.com/${owner}/${repo}/releases/download/${version}/hugo_${short_version}_${os}-${arch}.tar.gz"
 
-# [[ $(uname -m) != *"x86_64"* ]] && arch="32bit"
-
-echo $release_download_url
-echo "ASDF_INSTALL_TYPE: $ASDF_INSTALL_TYPE"
-echo "ASDF_INSTALL_VERSION: $ASDF_INSTALL_VERSION"
-echo "ASDF_INSTALL_PATH: $ASDF_INSTALL_PATH"
+# echo "$release_download_url"
+# echo "ASDF_INSTALL_TYPE: $ASDF_INSTALL_TYPE"
+# echo "ASDF_INSTALL_VERSION: $ASDF_INSTALL_VERSION"
+# echo "ASDF_INSTALL_PATH: $ASDF_INSTALL_PATH"
 
 download_temp_folder=$(mktemp -d)
-echo $download_temp_folder
-ls -alh $download_temp_folder
+# echo "$download_temp_folder"
+# ls -alh "$download_temp_folder"
 
-cd $download_temp_folder
+cd "$download_temp_folder"
 
-curl --silent --show-error -Lo "$download_temp_folder/hugo.tar.gz" -C - $release_download_url
-tar zxf "$download_temp_folder/hugo.tar.gz" -C $ASDF_INSTALL_PATH || exit 1
+curl --silent --show-error -Lo "$download_temp_folder/hugo.tar.gz" -C - "$release_download_url"
+
+tar zxf "$download_temp_folder/hugo.tar.gz" -C "$ASDF_INSTALL_PATH" || exit 1

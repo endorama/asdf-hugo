@@ -7,6 +7,6 @@ github_releases_url="https://api.github.com/repos/${owner}/${repo}/releases"
 # echo $github_releases_url
 releases_json=$(curl -s $github_releases_url)
 
-releases=$(echo ${releases_json} | jq --monochrome-output --raw-output ".[].name")
+releases=$(echo "${releases_json}" | jq --monochrome-output --raw-output ".[].name")
 
-echo $releases | tr "\n" " " | sed -e 's/[[:space:]]*$//'
+echo "$releases" | tr "\n" " " | sed -e 's/[[:space:]]*$//'
