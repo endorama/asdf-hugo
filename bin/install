@@ -28,7 +28,7 @@ release_download_url="https://github.com/${owner}/${repo}/releases/download/${ve
 # echo "ASDF_INSTALL_PATH: $ASDF_INSTALL_PATH"
 
 download_temp_folder=$(mktemp -d)
-# trap 'rm -rf "${download_temp_folder?}"' EXIT
+trap 'rm -rf "${download_temp_folder?}"' EXIT
 # echo "$download_temp_folder"
 # ls -alh "$download_temp_folder"
 
