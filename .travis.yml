@@ -1,0 +1,27 @@
+# language: c
+
+# before_script:
+#   - git clone https://github.com/asdf-vm/asdf.git $HOME/.asdf
+
+# script:
+#   - . $HOME/.asdf/asdf.sh
+#   # - asdf plugin-add hugo https://github.com/endorama/asdf-hugo
+#   # - asdf list-all hugo
+#   # - asdf install hugo v0.45.1
+#   # - asdf reshim hugo
+#   # - asdf local hugo v0.45.1
+#   # - hugo version
+#   - asdf plugin-test hugo https://github.com/endorama/asdf-hugo 'hugo version'
+
+# os:
+#   - linux
+#   - osx
+
+language: c
+script: asdf plugin-test hugo https://github.com/endorama/asdf-hugo.git
+before_script:
+  - git clone https://github.com/asdf-vm/asdf.git $HOME/.asdf
+  - . $HOME/.asdf/asdf.sh
+os:
+  - linux
+  - osx
