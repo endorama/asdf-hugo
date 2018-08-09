@@ -36,7 +36,5 @@ cd "$download_temp_folder"
 
 curl --silent --show-error -Lo "$download_temp_folder/hugo.tar.gz" -C - "$release_download_url"
 
-tar zxf "$download_temp_folder/hugo.tar.gz" -C "$ASDF_INSTALL_PATH" || exit 1
-
 mkdir -p "$ASDF_INSTALL_PATH/bin"
-ln -s "$ASDF_INSTALL_PATH/hugo" "$ASDF_INSTALL_PATH/bin/hugo"
+tar zxf "$download_temp_folder/hugo.tar.gz" -C "$ASDF_INSTALL_PATH/bin" || exit 1
