@@ -3,10 +3,27 @@
 owner="gohugoio"
 repo="hugo"
 github_releases_url="https://api.github.com/repos/${owner}/${repo}/releases"
+# Github API is paginated, default to 30 results. This call would return only 
+# latest 30 releases for a project
+# https://developer.github.com/v3/#pagination
+# https://developer.github.com/v3/guides/traversing-with-pagination/#navigating-through-the-pages
 
 # echo $github_releases_url
 releases_json=$(curl -s $github_releases_url)
 
-releases=$(echo "${releases_json}" | jq --monochrome-output --raw-output ".[].name")
+# stolen from https://github.com/rbenv/ruby-build/pull/631/files#diff-fdcfb8a18714b33b07529b7d02b54f1dR942
+function sort_versions() {
+    sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' | \
+        LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}';
+}
 
-echo "$releases" | tr "\n" " " | sed -e 's/[[:space:]]*$//'
+# echo "$releases_json"
+
+list_of_versions=$(echo "$releases_json" | grep -oE "tag_name\": \".{1,15}\"," | sed 's/tag_name\": \"v//;s/\",//' | sort_versions)
+
+#echo "${list_of_versions}" | wc -l
+
+for version in $list_of_versions; do
+    versions+=("$version")
+done
+echo "${versions[@]}"
